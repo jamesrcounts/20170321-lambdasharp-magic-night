@@ -23,10 +23,13 @@ resource "aws_s3_bucket_object" "lambda_zip" {
 
 resource "aws_cloudformation_stack" "lambda_function" {
   capabilities = ["CAPABILITY_IAM"]
+  depends_on = ["aws_s3_bucket_object.lambda_zip"]
   name = "${var.name}-${var.env}-lambda-function-stack"
   template_body = "${file("${path.module}/lambda.yaml")}"
   parameters {
     LambdaBucket = "${aws_cloudformation_stack.lambda_bucket.outputs["UploadBucket"]}"
+    LambdaKey = "lambda.zip"
+    LambdaKeyVersion = "${aws_s3_bucket_object.lambda_zip.version_id}"
   }
   on_failure = "DELETE"
 }

@@ -5,6 +5,12 @@ Parameters:
   LambdaBucket:
     Type: String
 
+  LambdaKey:
+    Type: String
+
+  LambdaKeyVersion:
+    Type: String
+
 Resources:
 
   LambdaExecutionRole:
@@ -32,19 +38,38 @@ Resources:
                   - 'logs:*'
                 Resource:
                   - 'arn:aws:logs:*:*:*'
+              -
+                Effect: 'Allow'
+                Action:
+                  - 's3:GetObject'
+                Resource:
+                  - 'arn:aws:s3:::*'
+              -
+                Effect: 'Allow'
+                Action:
+                  - 'rekognition:DetectLabels'
+                Resource: '*'
 
   LambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
       Code:
         S3Bucket: !Ref LambdaBucket
-        S3Key: 'lambda.zip'
+        S3Key: !Ref LambdaKey
+        S3ObjectVersion: !Ref LambdaKeyVersion
       Description: 'Lambda Function - SD Magic Night 2017-03-21'
       Handler: 'ImageTweeter::ImageTweeter.LambdaHandler::Handler'
       MemorySize: 128
       Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: 'dotnetcore1.0'
       Timeout: 30
+
+  LambdaFunctionPermission:
+    Type: 'AWS::Lambda::Permission'
+    Properties:
+      Action: 'lambda:*'
+      FunctionName: !GetAtt LambdaFunction.Arn
+      Principal: 's3.amazonaws.com'
 
 Outputs:
 
