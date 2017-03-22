@@ -13,6 +13,12 @@ resource "aws_cloudformation_stack" "upload_bucket" {
   on_failure = "DELETE"
 }
 
+resource "aws_cloudformation_stack" "lambda_bucket" {
+  name = "${var.name}-${var.env}-upload-bucket-stack"
+  template_body = "${file("${path.module}/upload_bucket.yaml")}"
+  on_failure = "DELETE"
+}
+
 resource "aws_s3_bucket_object" "lambda_zip" {
   bucket = "${aws_cloudformation_stack.upload_bucket.outputs["UploadBucket"]}"
   depends_on = ["data.archive_file.lambda_zip"]
