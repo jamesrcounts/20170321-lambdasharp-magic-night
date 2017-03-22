@@ -14,16 +14,16 @@ using Tweetinvi.Parameters;
 [assembly:LambdaSerializerAttribute(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
 namespace ImageTweeter {
     public class LambdaHandler {
-        public string Handler(ILambdaContext context) {
+        public string Handler(S3Event context) {
 
             // Level 1: Make this output when a file is uploaded to S3
             LambdaLogger.Log("Hello from The AutoMaTweeter!");
 
             // Level 2: Get the bucket name and key from event data and log to cloudwatch
-            //var bucketName = '';
-            //var keyName = '';
+            var bucketName = context.Records[0].S3.Bucket.Name;
+            var keyName = context.Records[0].S3.Object.Key;
 
-            //LambdaLogger.Log($"The AutoMaTweeter found a file path: {bucketName}/{keyName}");
+            LambdaLogger.Log($"The AutoMaTweeter found a file path: {bucketName}/{keyName}");
 
             // Boss Level: Use Amazon Rekognition to get keywords about the image
 
