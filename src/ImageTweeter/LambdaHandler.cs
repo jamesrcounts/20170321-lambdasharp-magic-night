@@ -12,12 +12,15 @@ using TweetinviModels = Tweetinvi.Models;
 using Tweetinvi.Parameters;
 using System.Threading.Tasks;
 using Tweetinvi.Models;
+using Amazon.Rekognition.Model;
 
-[assembly:LambdaSerializerAttribute(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
-namespace ImageTweeter {
-    public class LambdaHandler {
+[assembly: LambdaSerializerAttribute(typeof(Amazon.Lambda.Serialization.Json.JsonSerializer))]
+namespace ImageTweeter
+{
+    public class LambdaHandler
+    {
 
-          private static async Task<byte[]> RetrieveBinaryPayload(string bucketName, string keyName)
+        private static async Task<byte[]> RetrieveBinaryPayload(string bucketName, string keyName)
         {
             using (var client = new AmazonS3Client())
             {
@@ -30,7 +33,8 @@ namespace ImageTweeter {
             }
         }
 
-        public async Task Handler(S3Event s3Event) {
+        public async Task Handler(S3Event s3Event)
+        {
 
             // Level 1: Make this output when a file is uploaded to S3
             LambdaLogger.Log("Hello from The AutoMaTweeter!");
@@ -41,7 +45,18 @@ namespace ImageTweeter {
 
             LambdaLogger.Log($"The AutoMaTweeter found a file path: {bucketName}/{keyName}");
 
+            var file1 = await RetrieveBinaryPayload(bucketName, keyName);
+
             // Boss Level: Use Amazon Rekognition to get keywords about the image
+            IEnumerable<string> labels = Enumerable.Empty<string>();
+            using (var client = new AmazonRekognitionClient())
+            {
+                var request = new DetectLabelsRequest();
+                request.Image = new Image();
+                request.Image.Bytes = new MemoryStream(file1);
+                var response = await client.DetectLabelsAsync(request);
+                labels = response.Labels.Select(x => x.Name);
+            }
 
             // Level 3: Post the image and message to twitter
             var consumerKey = "GCNunS5DfXGwh8rvFAterxmXP";
@@ -50,14 +65,19 @@ namespace ImageTweeter {
             var accessTokenSecret = "fiFvNoEASqyqWo3FuFr5JKBYyWlILihVLlGCTSxfqAtlv";
             Auth.SetUserCredentials(consumerKey, consumerSecret, accessToken, accessTokenSecret);
 
-            var file1 =await RetrieveBinaryPayload(bucketName, keyName);
             var media = Upload.UploadImage(file1);
 
-            var tweet = Tweet.PublishTweet("Team1: This is my awesome photo!", new PublishTweetOptionalParameters
+            var message = "Team1: " + string.Join(" ", labels);
+            if (message.Length > 140)
+            {
+                message = message.Substring(0, 139);
+            }
+
+            var tweet = Tweet.PublishTweet(message, new PublishTweetOptionalParameters
             {
                 Medias = new List<IMedia> { media }
             });
-               
+
         }
     }
 }
