@@ -27,7 +27,7 @@ Resources:
             Action:
               - 's3:GetObject'
             Principal: '*'
-            Resource: !GetAtt UploadBucket.Arn
+            Resource: !Ref UploadBucket
 
 Outputs:
   UploadBucket:
