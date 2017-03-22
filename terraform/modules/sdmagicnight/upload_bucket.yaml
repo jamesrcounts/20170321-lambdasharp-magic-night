@@ -28,6 +28,10 @@ Resources:
               - 's3:GetObject'
             Principal: '*'
             Resource: !Ref UploadBucket
+          -
+            Action:
+              - 'lambda:InvokeFunction'
+            Resource: '*'
 
 Outputs:
   UploadBucket:

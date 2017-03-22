@@ -32,6 +32,7 @@ resource "aws_cloudformation_stack" "lambda_function" {
 }
 
 resource "aws_cloudformation_stack" "upload_bucket" {
+  depends_on = ["aws_cloudformation_stack.lambda_function"]
   name = "${var.name}-${var.env}-upload-bucket-stack"
   template_body = "${file("${path.module}/upload_bucket.yaml")}"
   parameters {
