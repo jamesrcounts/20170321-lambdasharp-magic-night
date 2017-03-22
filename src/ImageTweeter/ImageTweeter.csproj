@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp1.0</TargetFramework>
+    <AssemblyName>ImageTweeter</AssemblyName>
+    <PackageId>ImageTweeter</PackageId>
+    <RuntimeFrameworkVersion>1.0.4</RuntimeFrameworkVersion>
+    <PackageTargetFallback>$(PackageTargetFallback);dnxcore50</PackageTargetFallback>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Amazon.Lambda.Core" Version="1.0.0*" />
+    <PackageReference Include="Amazon.Lambda.S3Events" Version="1.0.0" />
+    <PackageReference Include="Amazon.Lambda.Serialization.Json" Version="1.0.0" />
+    <PackageReference Include="Amazon.Lambda.Tools" Version="1.0.0-preview1">
+      <PrivateAssets>All</PrivateAssets>
+    </PackageReference>
+    <PackageReference Include="Amazon.S3" Version="4.0.0" />
+    <PackageReference Include="AWSSDK.Rekognition" Version="3.3.1.2" />
+    <PackageReference Include="Bandwidth.Net" Version="3.0.0" />
+    <PackageReference Include="TweetinviAPI" Version="1.2" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <DotNetCliToolReference Include="Amazon.Lambda.Tools" Version="1.0.0-preview1" />
+  </ItemGroup>
+
+</Project>
