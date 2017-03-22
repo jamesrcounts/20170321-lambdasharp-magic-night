@@ -1,11 +1,33 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
+Parameters:
+
+  LambdaFunctionArn:
+    Type: String
+
 Resources:
 
   UploadBucket:
     Type: 'AWS::S3::Bucket'
     Properties:
       AccessControl: 'Private'
+      NotificationConfiguration:
+        LambdaConfigurations:
+          -
+            Function: !Ref LambdaFunctionArn
+            Event: 's3:ObjectCreated:*'
+              
+  UploadBucketPolicy:
+    Type: 'AWS::S3::BucketPolicy'
+    Properties:
+      Bucket: !Ref UploadBucket
+      PolicyDocument:
+        Statement:
+          -
+            Action:
+              - 's3:GetObject'
+            Principal: '*'
+            Resource: !GetAtt UploadBucket.Arn
 
 Outputs:
   UploadBucket:
