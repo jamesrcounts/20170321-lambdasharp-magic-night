@@ -1,0 +1,12 @@
+AWSTemplateFormatVersion: '2010-09-09'
+
+Resources:
+
+  LambdaFunction:
+    Type: 'AWS::Lambda::Function'
+    Properties:
+      Description: 'test'
+      Handler: 'IndexPoint'
+      MemorySize: 128
+      Runtime: 'dotnetcore1.0'
+      Timeout: 10
