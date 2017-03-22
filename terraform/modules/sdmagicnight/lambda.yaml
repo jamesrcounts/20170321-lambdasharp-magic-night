@@ -1,12 +1,47 @@
 AWSTemplateFormatVersion: '2010-09-09'
 
+Parameters:
+
+  LambdaBucket:
+    Type: String
+
 Resources:
+
+  LambdaExecutionRole:
+    Type: 'AWS::IAM::Role'
+    Properties:
+      AssumeRolePolicyDocument:
+        Version: '2012-10-17'
+        Statement:
+          -
+            Effect: 'Allow'
+            Principal:
+              Service:
+                - 'lambda.amazonaws.com'
+            Action:
+              - 'sts:AssumeRole'
+      Path: '/'
+      Policies:
+        -
+          PolicyName: 'root'
+          PolicyDocument:
+            Statement:
+              -
+                Effect: 'Allow'
+                Action:
+                  - 'logs:*'
+                Resource:
+                  - 'arn:aws:logs:*:*:*'
 
   LambdaFunction:
     Type: 'AWS::Lambda::Function'
     Properties:
-      Description: 'test'
+      Code:
+        S3Bucket: !Ref LambdaBucket
+        S3Key: 'lambda.zip'
+      Description: 'Lambda Function for SD Magic Night 2017-03-21'
       Handler: 'IndexPoint'
       MemorySize: 128
+      Role: !GetAtt LambdaExecutionRole.Arn
       Runtime: 'dotnetcore1.0'
       Timeout: 10
